@@ -26,12 +26,13 @@ A standardized, machine-readable format for decision-making logic.
 
 ## 3. Technical Stack
 
-| Component         | Technology              | Rationale                                                     |
-| :---------------- | :---------------------- | :------------------------------------------------------------ |
-| **Vector DB**     | LanceDB                 | "The vector DB for local SMEs"—high performance, local-first. |
-| **Orchestration** | LangGraph / Pydantic AI | Robust handling of search loops and agentic logic.            |
-| **Inference**     | Ollama                  | Privacy-centric, local-first execution.                       |
-| **Interface**     | TUI (Rich / Textual)    | High "star appeal" for developers; fast and keyboard-driven.  |
+| Component         | Technology              | Rationale                                                        |
+| :---------------- | :---------------------- | :--------------------------------------------------------------- |
+| **Vector DB**     | LanceDB                 | "The vector DB for local SMEs"—high performance, file-based.     |
+| **Orchestration** | LangGraph / Pydantic AI | Robust handling of search loops and agentic logic.               |
+| **Inference**     | Enterprise LLM API      | Azure OpenAI, AWS Bedrock, or Google Vertex. No local GPU needed.|
+| **API Server**    | FastAPI                 | Lightweight, async, easy to deploy on any internal VM.           |
+| **Interface**     | TUI (Rich / Textual)    | High "star appeal" for developers; fast and keyboard-driven.     |
 
 ## 4. Implementation Roadmap
 
@@ -49,13 +50,28 @@ A standardized, machine-readable format for decision-making logic.
 - [ ] Develop logic to generate `SKILL.md` manifests from ingested data/interviews.
 - [ ] Build visual "Decision Tree" generation (Mermaid support in Markdown).
 
-### Phase 3: Agentic Reasoning Loop
+### Phase 3: Export & Handoff
+
+- [ ] Implement `sme-mirror export` command to package vector store + manifests + tone profiles.
+- [ ] Define portable package format (`manifest.json`, directory structure).
+- [ ] Add `sme-mirror import <package>` command to reconstitute a knowledge base from an export.
+- [ ] Support commit-to-repo and file-copy handoff workflows.
+
+### Phase 4: Lightweight API Server
+
+- [ ] Build a **FastAPI** server for team-wide consumption (`sme-mirror serve`).
+- [ ] Implement retrieval endpoints backed by LanceDB.
+- [ ] Add enterprise LLM proxy layer (configurable API key + provider).
+- [ ] Add tone-injection prompt construction from imported profiles.
+- [ ] Health check and basic auth/token gating.
+
+### Phase 5: Agentic Reasoning Loop
 
 - [ ] Implement **LangGraph** workflows for multi-layer search.
 - [ ] Add support for "Evidence Linking" (verbatim quotes + source paths).
 - [ ] Refine "Agent Personality" prompt injection based on SME profiles.
 
-### Phase 4: Developer Experience (TUI)
+### Phase 6: Developer Experience (TUI)
 
 - [ ] Build a sleek terminal dashboard using **Textual**.
 - [ ] Implement `sme-mirror chat` and `sme-mirror ingest` commands.
