@@ -12,7 +12,7 @@ This is the **knowledge vacuum** problem, and it's one of the most expensive, in
 
 > _"Export your decision-making logic before you leave your next job."_
 
-The end result is not a chatbot. It is a **structured agent skill** — a machine-readable, human-auditable knowledge package that any agentic framework can consume.
+The end result is not a chatbot. It is a **structured agent skill** — a set of plain markdown files that any coding agent (Antigravity, Claude Code, Cursor, etc.) can consume to answer questions _as_ the departed expert.
 
 ## Who Is This For?
 
@@ -23,118 +23,166 @@ The end result is not a chatbot. It is a **structured agent skill** — a machin
 | **AI/Agent Developers**      | Consume structured SME skills as plug-in modules for agentic workflows.          |
 | **Open-Source Contributors** | Build and share reusable "SME persona templates" for the community.              |
 
-## Deployment Model: Upload → Process → Query
+## How It Works
 
-**offboarding-sme-clone** is a **thin, VPC-hosted web application**. There is nothing to install locally — the departing engineer interacts with the app through a browser.
+### Prerequisites
 
-| Phase | Actor | What Happens |
-| :---- | :---- | :----------- |
-| **1. Upload** | Departing SME | Uploads curated files (Slack exports, emails, PDFs, code, docs) to a workspace via the web UI. |
-| **2. Process** | App (automated) | Ingests documents into LanceDB, extracts tone & style, generates `SKILL.md` manifests. |
-| **3. Query** | Any teammate | Searches the knowledge base or asks questions through the web UI or API. |
+The user has a coding agent — **Google Antigravity** (default), **Claude Code**, **Cursor**, or similar — already set up in their development environment.
 
-The SME curates what to upload; the app handles everything else. A teammate or manager can also upload files on the SME's behalf if preferred.
+### User Journey
 
-> **Key Assumption:** The app is deployed on the organization's **internal VPC or private cloud** and has access to an **enterprise LLM API key** (e.g., Azure OpenAI, AWS Bedrock, Google Vertex). No data leaves the organization's infrastructure boundary.
+1. **Departing engineer curates their knowledge.** They place key files — Slack exports, email exports, presentations, spreadsheets, PDFs, design docs — into a **Google Drive folder** (or another corporate-controlled shared storage like SharePoint or OneDrive).
+
+2. **Any teammate clones this repo** to their local machine.
+
+3. **The teammate points the tool at the shared folder.** A single setup command processes the raw documents and generates structured artifacts back into the same folder:
+
+   ```bash
+   uv run python scripts/setup.py --source "G:/My Drive/offboarding/jane-doe" --sme-email jane@company.com
+   ```
+
+4. **The tool runs a two-stage pipeline:**
+
+   **Stage 1 — Parse:** The tool detects each file's format and converts it into clean, readable markdown. Slack export ZIPs are unpacked and filtered for the SME's messages (grouped by channel). Email archives (`.mbox`, `.eml`) are parsed into threaded conversations. PDFs, Word docs, PowerPoint decks, and spreadsheets are extracted to plain text. The parsed output is stored in `.sme-clone/parsed/`.
+
+   **Stage 2 — Analyze:** The tool reads the parsed markdown and generates three categories of knowledge artifacts:
+   - **`_INDEX.md`** — A document catalog with a one-paragraph summary of every parsed file, its path, key topics, and entities. This is the agent's table of contents.
+   - **`tone_profile.md`** — The SME's extracted communication style: how they explain things, what analogies they reach for, their level of directness, their humor, their go-to phrases.
+   - **`skills/*.md`** — One `SKILL.md` file per domain of expertise, containing triggers, decision trees, and evidence pointers back to parsed source documents.
+
+5. **The teammate opens their coding agent and asks questions.** The agent reads the generated artifacts, navigates to the parsed source documents when needed, and responds with facts — in the departing engineer's voice and style.
+
+### Folder Structure
+
+```
+Google Drive/
+└── offboarding/jane-doe/
+    ├── slack_export.zip              # Raw: what the SME dropped in
+    ├── architecture_decisions.pdf
+    ├── incident_runbooks.docx
+    ├── quarterly_planning.pptx
+    ├── budget_model.xlsx
+    ├── gmail_takeout.mbox
+    └── .sme-clone/                   # Generated: what the tool creates
+        ├── parsed/                   # Stage 1: format conversion
+        │   ├── slack/
+        │   │   ├── incident-response.md
+        │   │   └── architecture-decisions.md
+        │   ├── email/
+        │   │   ├── thread_redis_migration.md
+        │   │   └── thread_deploy_incident.md
+        │   └── docs/
+        │       ├── architecture_decisions.md
+        │       ├── incident_runbooks.md
+        │       ├── quarterly_planning.md
+        │       └── budget_model.md
+        ├── _INDEX.md                 # Stage 2: document catalog & summaries
+        ├── tone_profile.md           # Stage 2: voice, style, personality
+        └── skills/                   # Stage 2: decision logic
+            ├── debugging_redis.md
+            ├── deploy_pipeline.md
+            └── capacity_planning.md
+```
+
+Everything lives in **one folder**. One share link gives a teammate access to the raw source material, the parsed readable versions, and the generated knowledge artifacts. Access control is handled entirely by the corporate storage platform.
 
 ## Core Principles
 
-### 1. Privacy-First & Org-Controlled
+### 1. Zero Infrastructure
 
-All data stays within the organization's **VPC or private cloud**. The app never phones home, never sends data to external services (except the configured enterprise LLM endpoint), and never exposes data outside the network boundary. Privacy is enforced at two levels: the **SME decides what to upload**, and the **organization controls the infrastructure** where it lives.
+There is no server to deploy, no database to run, no API to host. The tool generates **plain markdown files** into a shared folder. The coding agent the team already uses is the query interface. If you can clone a repo and run a Python script, you can use this tool.
 
-### 2. Structured Over Conversational
+### 2. Privacy via Curation
 
-The primary output is the **`SKILL.md` manifest** — a standardized, machine-readable document with YAML frontmatter that captures triggers, decision trees, and evidence pointers. Conversation is a means to an end, not the product itself.
+Privacy is enforced at two boundaries: the **SME decides what files to share**, and the **organization controls access** to the shared folder. No data passes through third-party infrastructure. The only external call is from the teammate's coding agent to its own LLM provider — which is already configured and approved by the organization.
 
-### 3. Agent-Native, Not Agent-Dependent
+### 3. Structured Over Conversational
 
-Skills produced by this tool are designed to be consumed by agentic frameworks (LangGraph, AutoGPT, etc.), but the tool itself is self-contained. No external agent platform is required to create or query a skill.
+The primary output is the **`SKILL.md` manifest** — a standardized, machine-readable document that captures triggers, decision trees, and evidence pointers. Conversation is a means to an end, not the product itself.
 
-### 4. Graceful Degradation
+### 4. Agent-Native, Agent-Agnostic
 
-The app provides value at three layers, each requiring progressively more configuration:
+The generated artifacts are plain markdown — readable by any coding agent, any LLM, or any human. The repo ships with skill definitions for Antigravity (`.gemini/`), Claude Code (`CLAUDE.md`), and Cursor (`.cursorrules`), but the artifacts themselves are format-agnostic.
 
-| Layer | What You Get | What You Need |
-| :---- | :----------- | :------------ |
-| **Layer 1: SKILL.md Files** | Decision trees, triggers, logic flows — readable by any human or AI assistant. | Just the app. Export files to any repo. |
-| **Layer 2: Structured Search** | Semantic search over ingested docs with source citations. | The app. No LLM needed for retrieval. |
-| **Layer 3: Agent Query** | Full conversational access in the SME's voice with evidence linking. | The app + enterprise LLM key. |
+### 5. Graceful Degradation
 
-### 5. Developer-Grade UX
+The tool provides value at three layers, each requiring progressively less tooling:
 
-The interface is a clean, minimal web UI — fast, purposeful, and distraction-free. This is a tool built _by_ developers, _for_ developers. A CLI is available for scripted or headless workflows.
+| Layer                       | What You Get                                                                   | What You Need                             |
+| :-------------------------- | :----------------------------------------------------------------------------- | :---------------------------------------- |
+| **Layer 1: SKILL.md Files** | Decision trees, triggers, logic flows — readable by any human or AI assistant. | Nothing. Just open the markdown files.    |
+| **Layer 2: Indexed Search** | Document catalog with summaries, topics, and cross-references.                 | The generated `_INDEX.md` file.           |
+| **Layer 3: Persona Query**  | Full conversational access in the SME's voice with evidence linking.           | A coding agent + the generated artifacts. |
 
 ## Key Capabilities
 
-### Knowledge Ingestion
+### Format Parsing
 
-Ingest local documentation, codebases, and written artifacts (Markdown, PDF, code files) into a local **LanceDB** vector store. This is the raw evidence base.
+Detect and convert heterogeneous file formats into clean, readable markdown:
+
+| Input Format                    | Parser                                                                | Output                                            |
+| :------------------------------ | :-------------------------------------------------------------------- | :------------------------------------------------ |
+| Slack export (`.zip` of JSON)   | Unzip, filter by SME user ID, group by channel, strip system messages | One `.md` per channel with threaded conversations |
+| Email archive (`.mbox`, `.eml`) | Parse headers/body, group by thread, strip signatures/MIME noise      | One `.md` per conversation thread                 |
+| PDF                             | Text extraction with layout preservation                              | One `.md` per document                            |
+| Word (`.docx`)                  | Paragraph and heading extraction                                      | One `.md` per document                            |
+| PowerPoint (`.pptx`)            | Slide-by-slide text extraction with speaker notes                     | One `.md` per presentation                        |
+| Excel (`.xlsx`)                 | Sheet-by-sheet tabular extraction                                     | One `.md` per workbook                            |
+| Markdown / plain text           | Pass-through (copy as-is)                                             | One `.md` per file                                |
+| Code files                      | Pass-through with language tagging                                    | One `.md` per file                                |
+
+All parsed output is written to `.sme-clone/parsed/` and becomes the input for the analysis stage.
+
+### Knowledge Indexing
+
+Process the parsed markdown files into a structured document catalog (`_INDEX.md`) containing a one-paragraph summary of every file, its path, key topics, entities, and cross-references. This is the agent's primary entry point for navigating the knowledge base.
 
 ### Tone & Style Extraction
 
-Analyze an SME's writing across documents to capture their unique voice — how they explain things, what analogies they reach for, their level of directness. The resulting agent doesn't just know _what_ the SME knew; it communicates _how_ they communicated.
+Analyze a SME's writing across documents to capture their unique voice — how they explain things, what analogies they reach for, their level of directness. The resulting `tone_profile.md` enables the coding agent to respond not just with _what_ the SME knew, but _how_ they communicated.
 
 ### Skill Manifest Generation
 
-Synthesize ingested knowledge into a `SKILL.md` file — a portable, versioned artifact containing:
+Synthesize ingested knowledge into `SKILL.md` files — portable, versioned artifacts containing:
 
 - **Triggers** — When to consult this skill (e.g., "debugging Redis latency spikes").
 - **Decision Trees** — Concrete logic flows with branch conditions.
-- **Evidence** — Pointers back to source chunks in the vector store.
+- **Evidence** — Pointers back to specific source documents and sections.
 
-### Export
+### Multi-Agent Skill Definitions
 
-Any persona's knowledge artifacts can be exported as a portable archive for backup, migration, or integration with external systems:
+The repo includes ready-to-use skill definitions for major coding agents:
 
-```
-exported_package/
-├── skill_manifests/       # SKILL.md files (plain markdown)
-├── vector_store/          # LanceDB data (file-based, self-contained)
-├── tone_profile/          # Extracted voice/style metadata
-└── manifest.json          # Package index and version info
-```
+| Agent                  | Skill File                     | How It Works                                                            |
+| :--------------------- | :----------------------------- | :---------------------------------------------------------------------- |
+| **Google Antigravity** | `.gemini/` custom instructions | Agent reads artifacts from the shared folder and responds in character. |
+| **Claude Code**        | `CLAUDE.md` at repo root       | Same artifacts, Claude-native instruction format.                       |
+| **Cursor**             | `.cursorrules`                 | Same artifacts, Cursor-native instruction format.                       |
 
-Export is optional — the primary consumption path is through the app itself.
-
-### Web UI & API
-
-The app is a lightweight **FastAPI** server with a minimal web frontend:
-
-- **Upload UI** — Drag-and-drop file upload into a persona workspace.
-- **Query UI** — Search and converse with any persona.
-- **REST API** — Programmatic access for integrations and agentic workflows.
-
-It runs as a single Python process with minimal resource requirements — deployable on the smallest internal VM.
-
-### Agentic Search (Layered Reasoning)
-
-A multi-layer retrieval pipeline:
-
-- **Layer 1:** Local codebase and documentation (LanceDB vectors).
-- **Layer 2:** External context and archives (Slack exports, Jira dumps, etc.).
-- **Synthesis:** The agent combines evidence across layers and responds in the SME's extracted tone, powered by the enterprise LLM.
+Each skill definition teaches the agent the folder structure, how to read the index and SKILL files, and how to apply the tone profile when responding.
 
 ## What Success Looks Like
 
-1. A departing engineer spends a focused afternoon curating their key documents and uploading them to the app.
-2. The app ingests everything, extracts their communication style, and generates a set of `SKILL.md` files — one per domain of expertise.
-3. The laptop goes back to IT. **The knowledge survives on the VPC.**
-4. Months later, a new teammate hits an obscure production issue. They open the app, query the departing engineer's persona, and the agent walks them through the exact debugging logic — in their voice, citing specific code and docs.
-5. The knowledge didn't leave with the person. It's still there, structured, queryable, and useful.
+1. A departing engineer spends a focused afternoon dragging their key documents into a shared Google Drive folder.
+2. A teammate clones this repo and runs a single setup command pointed at the folder.
+3. The tool processes everything and generates `_INDEX.md`, `tone_profile.md`, and a set of `SKILL.md` files — all written back into the same folder.
+4. The laptop goes back to IT. **The knowledge survives in the shared folder.**
+5. Months later, a new teammate hits an obscure production issue. They open Antigravity (or Claude Code, or Cursor), ask a question, and the agent walks them through the exact debugging logic the original engineer would have used — in their voice, citing specific documents.
+6. The knowledge didn't leave with the person. It's still there, structured, queryable, and useful.
 
 ## Differentiation
 
-| Approach                        | Limitation                                       | How We Differ                                        |
-| :------------------------------ | :----------------------------------------------- | :--------------------------------------------------- |
-| Internal wikis / Confluence     | Stale within weeks; no structured reasoning.     | `SKILL.md` encodes _decision logic_, not just facts. |
-| Generic RAG chatbots            | No personality, no curation, no structure.       | Tone extraction + layered search + manifest format.  |
-| Exit interviews / handoff docs  | One-shot, unstructured, rarely referenced again. | Living, queryable artifacts with evidence linking.   |
-| Proprietary knowledge platforms | Vendor lock-in, cloud-dependent, expensive.      | Self-hosted on your VPC, open-source, agent-framework agnostic. |
+| Approach                        | Limitation                                        | How We Differ                                         |
+| :------------------------------ | :------------------------------------------------ | :---------------------------------------------------- |
+| Internal wikis / Confluence     | Stale within weeks; no structured reasoning.      | `SKILL.md` encodes _decision logic_, not just facts.  |
+| Generic RAG chatbots            | No personality, no curation, no structure.        | Tone extraction + structured index + manifest format. |
+| Exit interviews / handoff docs  | One-shot, unstructured, rarely referenced again.  | Living, queryable artifacts with evidence linking.    |
+| Proprietary knowledge platforms | Vendor lock-in, server infrastructure, expensive. | Zero infrastructure, open-source, agent-agnostic.     |
 
 ## Long-Term Direction
 
 1. **Community SME Templates** — A library of shareable persona archetypes (e.g., "The Legacy Code Whisperer", "The Infrastructure Firefighter") that teams can fork and customize.
-2. **Framework Integrations** — First-class skill adapters for major agentic platforms (AutoGPT, CrewAI, LangGraph).
-3. **Team-Scale Deployment** — Support for merging multiple SME skills into a unified team knowledge agent.
-4. **Guided Interview Mode** — An interactive session that systematically draws out decision-making logic from the SME through targeted questions.
+2. **Incremental Re-indexing** — Detect new files added to the shared folder and update artifacts without re-processing the entire corpus.
+3. **Team-Scale Personas** — Support for merging multiple SME knowledge bases into a unified team knowledge agent.
+4. **Guided Interview Mode** — An interactive session (run through the coding agent) that systematically draws out decision-making logic from the SME through targeted questions.
+5. **Cross-Agent Compatibility Testing** — Automated validation that skill definitions work correctly across Antigravity, Claude Code, and Cursor.
