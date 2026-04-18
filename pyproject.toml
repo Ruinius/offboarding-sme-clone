@@ -15,5 +15,13 @@ dependencies = [
     "rich>=13.0.0",             # Progress bars and formatted terminal output
 ]
 
+[tool.setuptools]
+packages = ["sme_clone"]
+
 [project.scripts]
-sme-clone = "scripts.setup:main"
+sme-clone = "sme_clone.setup:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3",
+]

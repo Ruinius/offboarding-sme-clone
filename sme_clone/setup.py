@@ -21,12 +21,15 @@ _REPO_ROOT = Path(__file__).resolve().parent.parent
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
-from scripts.parsers.docx_parser import parse_docx
-from scripts.parsers.email_parser import parse_email_archive
-from scripts.parsers.pdf_parser import parse_pdf
-from scripts.parsers.pptx_parser import parse_pptx
-from scripts.parsers.slack_parser import parse_slack_export
-from scripts.parsers.xlsx_parser import parse_xlsx
+from sme_clone.parsers.docx_parser import parse_docx
+from sme_clone.parsers.email_parser import parse_email_archive
+from sme_clone.parsers.pdf_parser import parse_pdf
+from sme_clone.parsers.pptx_parser import parse_pptx
+from sme_clone.parsers.slack_parser import parse_slack_export
+from sme_clone.parsers.xlsx_parser import parse_xlsx
+from sme_clone.indexer import build_index
+from sme_clone.tone_extractor import extract_tone
+from sme_clone.skill_generator import generate_skills
 
 # ---------------------------------------------------------------------------
 # File-type routing table
@@ -284,21 +287,32 @@ def main() -> None:
     print()
 
     # Step 2a: Build _INDEX.md
-    # TODO: from scripts.indexer import build_index
-    print("  2a. Generating _INDEX.md ... [not yet implemented -- requires LLM]")
+    print("  2a. Generating _INDEX.md...", end=" ")
+    index_path = sme_clone_dir / "_INDEX.md"
+    build_index(parsed_dir, index_path)
+    print(f"OK -> {index_path.relative_to(sme_clone_dir)}")
 
     # Step 2b: Extract tone profile
-    # TODO: from scripts.tone_extractor import extract_tone
-    print("  2b. Generating tone_profile.md ... [not yet implemented -- requires LLM]")
+    print("  2b. Generating tone_profile.md...", end=" ")
+    tone_path = sme_clone_dir / "tone_profile.md"
+    extract_tone(parsed_dir, tone_path)
+    print(f"OK -> {tone_path.relative_to(sme_clone_dir)}")
 
-    # Step 2c: Generate SKILL.md files
-    # TODO: from scripts.skill_generator import generate_skills
-    print("  2c. Generating SKILL.md files ... [not yet implemented -- requires LLM]")
+    # Step 2c: Generate SKILL.md templates
+    print("  2c. Generating SKILL.md files...", end=" ")
+    generated_skills = generate_skills(parsed_dir, index_path, skills_dir)
+    if generated_skills:
+        print(f"OK -> {len(generated_skills)} tasks created in {skills_dir.relative_to(sme_clone_dir)}")
 
     print()
     print("+" + "-" * 58 + "+")
-    print(f"  Stage 1 complete. Parsed files written to: {parsed_dir}")
-    print(f"  Stage 2 pending. Index, tone, and skill generation require LLM integration.")
+    print(f"  Stage 1 (Parse) complete. Parsed files: {parsed_dir.relative_to(source)}")
+    print(f"  Stage 2 (Analyze) ready. AI-readable drafts created.")
+    print()
+    print("  NEXT STEPS:")
+    print(f"  1. Open {index_path.relative_to(source)}")
+    print("  2. Ask your AI agent (Antigravity, Claude Code, Cursor) to:")
+    print("     'Complete the Stage 2 analysis using the parsed documents.'")
     print("+" + "-" * 58 + "+")
 
 
