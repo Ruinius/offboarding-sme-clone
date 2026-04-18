@@ -8,3 +8,22 @@ wheels/
 
 # Virtual environments
 .venv
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Environment variables
+.env
+.env.local
+
+# NOTE: test-example/.sme-clone/ is intentionally committed (it's the demo output).
+# Do NOT add .sme-clone to this gitignore.

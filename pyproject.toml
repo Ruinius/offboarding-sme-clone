@@ -1,14 +1,19 @@
 [project]
 name = "offboarding-sme-clone"
 version = "0.1.0"
-description = "Add your description here"
+description = "Export a departing engineer's decision-making logic into structured, agent-readable knowledge artifacts."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "lancedb>=0.30.2",
-    "langgraph>=1.1.6",
-    "ollama>=0.6.1",
-    "pydantic-ai>=1.83.0",
-    "rich>=15.0.0",
-    "textual>=8.2.3",
+    # Document parsers
+    "python-docx>=1.1.0",       # Word (.docx) parsing
+    "python-pptx>=1.0.0",       # PowerPoint (.pptx) parsing
+    "openpyxl>=3.1.0",          # Excel (.xlsx) parsing
+    "pdfplumber>=0.11.0",       # PDF text extraction
+
+    # CLI output
+    "rich>=13.0.0",             # Progress bars and formatted terminal output
 ]
+
+[project.scripts]
+sme-clone = "scripts.setup:main"

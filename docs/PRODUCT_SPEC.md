@@ -52,18 +52,73 @@ The user has a coding agent — **Google Antigravity** (default), **Claude Code*
 
 5. **The teammate opens their coding agent and asks questions.** The agent reads the generated artifacts, navigates to the parsed source documents when needed, and responds with facts — in the departing engineer's voice and style.
 
-### Folder Structure
+### Folder Structures
+
+There are two separate folder structures: the **repo** (the tool) and the **Google Drive folder** (the data). The repo runs locally on the teammate's machine; the Drive folder is shared corporate storage where the SME's knowledge lives.
+
+#### The Repo (what the teammate clones)
 
 ```
-Google Drive/
+offboarding-sme-clone/                # This repository
+├── scripts/
+│   ├── setup.py                      # Main entry point: parse → analyze pipeline
+│   ├── parsers/
+│   │   ├── slack_parser.py           # Slack export ZIP/JSON → markdown
+│   │   ├── email_parser.py           # mbox/eml → markdown
+│   │   ├── pdf_parser.py             # PDF → markdown
+│   │   ├── docx_parser.py            # Word → markdown
+│   │   ├── pptx_parser.py            # PowerPoint → markdown
+│   │   └── xlsx_parser.py            # Excel → markdown
+│   ├── indexer.py                    # Generates _INDEX.md from parsed files
+│   ├── tone_extractor.py             # Generates tone_profile.md
+│   └── skill_generator.py            # Generates SKILL.md files
+├── skill_definitions/
+│   ├── antigravity/                  # .gemini/ custom instructions template
+│   ├── claude_code.md                # CLAUDE.md template
+│   └── cursor.cursorrules            # .cursorrules template
+├── test-example/                     # Sample data + expected output
+│   ├── sample_slack_export.zip       # Synthetic Slack export for testing
+│   ├── sample_design_doc.pdf         # Sample PDF input
+│   ├── sample_emails.mbox            # Synthetic email archive
+│   └── .sme-clone/                   # Pre-generated output (committed to repo)
+│       ├── parsed/
+│       │   ├── slack/
+│       │   │   └── general.md
+│       │   ├── email/
+│       │   │   └── thread_api_redesign.md
+│       │   └── docs/
+│       │       └── sample_design_doc.md
+│       ├── _INDEX.md
+│       ├── tone_profile.md
+│       └── skills/
+│           └── api_design_patterns.md
+├── docs/
+│   ├── PRODUCT_SPEC.md               # This document
+│   └── ROADMAP.md
+├── pyproject.toml
+└── README.md
+```
+
+The `test-example/` folder serves two purposes: it is a **test fixture** for validating the scripts during development, and a **demo** that shows new users exactly what the tool produces — before they run it on real data. The `.sme-clone/` subfolder inside it is **committed to the repo** so the expected output is always visible.
+
+This repo contains **no real user data** — only scripts, configuration, and synthetic test examples.
+
+#### The Google Drive Folder (where the knowledge lives)
+
+```
+Google Drive (or SharePoint, OneDrive, etc.)
 └── offboarding/jane-doe/
-    ├── slack_export.zip              # Raw: what the SME dropped in
+    │
+    │  ── Raw: what the SME drops in ──────────────────
+    ├── slack_export.zip
     ├── architecture_decisions.pdf
     ├── incident_runbooks.docx
     ├── quarterly_planning.pptx
     ├── budget_model.xlsx
     ├── gmail_takeout.mbox
-    └── .sme-clone/                   # Generated: what the tool creates
+    │
+    │  ── Generated: what the tool creates ────────────
+    └── .sme-clone/
         ├── parsed/                   # Stage 1: format conversion
         │   ├── slack/
         │   │   ├── incident-response.md
@@ -84,7 +139,31 @@ Google Drive/
             └── capacity_planning.md
 ```
 
-Everything lives in **one folder**. One share link gives a teammate access to the raw source material, the parsed readable versions, and the generated knowledge artifacts. Access control is handled entirely by the corporate storage platform.
+The SME populates the root of this folder with raw files. The tool writes everything under `.sme-clone/`. **Nothing flows back into the repo.**
+
+#### How they connect
+
+```
+┌─────────────────────────┐         ┌──────────────────────────────────┐
+│  Teammate's Machine     │         │  Google Drive (shared)            │
+│                         │         │                                  │
+│  offboarding-sme-clone/ │──runs──▶│  offboarding/jane-doe/           │
+│  (cloned repo)          │  setup  │    ├── raw files (SME uploads)   │
+│                         │  script │    └── .sme-clone/ (generated)   │
+└─────────────────────────┘         └──────────────────────────────────┘
+                                                    │
+                                                    │ reads
+                                                    ▼
+                                    ┌──────────────────────────────────┐
+                                    │  Coding Agent                    │
+                                    │  (Antigravity / Claude / Cursor) │
+                                    │  answers questions using         │
+                                    │  _INDEX.md + tone_profile.md     │
+                                    │  + skills/*.md                   │
+                                    └──────────────────────────────────┘
+```
+
+One share link gives a teammate access to the raw source material, the parsed readable versions, and the generated knowledge artifacts. Access control is handled entirely by the corporate storage platform.
 
 ## Core Principles
 
