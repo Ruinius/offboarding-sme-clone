@@ -143,6 +143,14 @@ offboarding-sme-clone/
 
 This is a personal project. You're welcome to **fork it** and build on it — that's encouraged! However, I'm not accepting pull requests or external contributions at this time.
 
+## Other Projects
+
+Explore more of my work:
+
+- [**tiger-cafe**](https://github.com/Ruinius/tiger-cafe) — A high-performance, modern web application showcase.
+- [**tiger-transformer**](https://github.com/Ruinius/tiger-transformer) — Advanced model transformation utilities for AI engineers.
+- [**financial-analyst-skills**](https://github.com/Ruinius/financial-analyst-skills) — A comprehensive suite of agentic skills for financial modeling.
+
 ## License
 
 [MIT](LICENSE) — do whatever you want with it.
