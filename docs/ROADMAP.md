@@ -38,4 +38,4 @@
 - [x] GitHub Actions CI pipeline
 - [x] Unit test coverage (pytest suite for all parsers)
 - [x] README with quickstart guide
-- [ ] First tagged release
+- [x] First tagged release (v0.1.0)
