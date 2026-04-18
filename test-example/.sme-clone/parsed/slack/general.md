@@ -1,30 +1,23 @@
 # #general
 
-> Parsed from: `sample_slack_export.zip` → `general` channel
-> SME: Jane Doe (jane@example.com)
+> **Channel purpose:** General team discussion
+
+> **Date range:** 2025-01-15 16:00 UTC — 2025-01-17 16:00 UTC | **Messages:** 4
 
 ---
 
-**2025-01-15 09:23** — Jane Doe
+**Jane Doe** — 2025-01-15 16:00 UTC
 
-Hey team, quick heads-up: I'm going to refactor the API gateway this sprint. The current routing logic has accumulated a lot of tech debt — we're doing string matching where we should be using a proper trie structure. I'll have a design doc out by EOD tomorrow.
+TL;DR — I’m going to refactor the API gateway routing. The current nested if/else chain is O(n) and we’re seeing p99 latency spikes during deploys. Plan is to replace it with a radix trie.
 
----
+**Jane Doe** — 2025-01-15 16:20 UTC
 
-**2025-01-15 09:31** — Jane Doe
+Based on the benchmarks I ran yesterday, we should see ~33% p99 reduction. I’ll share the design doc later today.
 
-> Thread reply to: "What about backward compatibility?"
+**Jane Doe** — 2025-01-16 16:00 UTC
 
-Good question. The external contract stays the same — same URLs, same response shapes. The refactor is purely internal. I'll add a compatibility test suite before I touch anything.
+Design doc is up: https://docs.example.com/api-gateway-refactor. @Alex Kim can you review the migration plan section?
 
----
+**Jane Doe** — 2025-01-17 16:00 UTC
 
-**2025-01-16 14:05** — Jane Doe
-
-Design doc is up: [API Gateway Routing Refactor](link). TL;DR: replace the nested if/else chain with a radix trie, add route-level middleware hooks, and consolidate the auth checks into a single interceptor. Should cut our p99 latency by ~15ms on the hot path.
-
----
-
-**2025-01-17 10:12** — Jane Doe
-
-Deployed the routing refactor to staging. No regressions in the smoke tests. Going to let it soak for 48 hours before promoting to prod. If anyone sees weird 404s on staging, ping me — it's probably a missed route migration.
+Deployed the trie router to staging. Smoke tests passing. Going to let it soak for 48 hours before we push to prod.

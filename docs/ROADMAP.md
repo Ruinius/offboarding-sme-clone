@@ -2,13 +2,16 @@
 
 ## Milestone 1: Parser Prototypes (Current)
 
-- [ ] Slack export parser (ZIP/JSON → per-channel markdown)
-- [ ] Email archive parser (mbox/eml → per-thread markdown)
-- [ ] PDF parser (text extraction with layout preservation)
-- [ ] Word parser (docx → markdown)
-- [ ] PowerPoint parser (pptx → markdown with speaker notes)
-- [ ] Excel parser (xlsx → markdown tables)
-- [ ] Parser dispatch logic in `setup.py`
+- [x] Slack export parser (ZIP/JSON → per-channel markdown)
+- [x] Email archive parser (mbox/eml → per-thread markdown)
+- [x] PDF parser (text extraction with layout preservation)
+- [x] Word parser (docx → markdown)
+- [x] PowerPoint parser (pptx → markdown with speaker notes)
+- [x] Excel parser (xlsx → markdown tables)
+- [x] Parser dispatch logic in `setup.py`
+- [x] Markdown/text pass-through parser
+- [x] Code file pass-through parser (with language tagging)
+- [x] Synthetic test fixtures (`test-example/`)
 - [ ] Unit tests for each parser using `test-example/` fixtures
 
 ## Milestone 2: Index & Tone Engine
@@ -26,14 +29,14 @@
 
 ## Milestone 4: Agent Skill Definitions
 
-- [ ] Antigravity skill definition (`.gemini/` custom instructions)
-- [ ] Claude Code skill definition (`CLAUDE.md`)
-- [ ] Cursor skill definition (`.cursorrules`)
+- [x] Antigravity skill definition (`.gemini/` custom instructions)
+- [x] Claude Code skill definition (`CLAUDE.md`)
+- [x] Cursor skill definition (`.cursorrules`)
 - [ ] End-to-end testing with each coding agent
 
 ## Milestone 5: CI / Release
 
 - [ ] GitHub Actions CI pipeline
 - [ ] Unit test coverage
-- [ ] README with quickstart guide
+- [x] README with quickstart guide
 - [ ] First tagged release

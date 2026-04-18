@@ -1,5 +1,13 @@
 # offboarding-sme-clone
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![Status: Early Development](https://img.shields.io/badge/status-early%20development-orange.svg)]()
+[![uv](https://img.shields.io/badge/uv-package%20manager-blueviolet.svg)](https://docs.astral.sh/uv/)
+[![Agent: Antigravity](https://img.shields.io/badge/agent-Antigravity-4285F4.svg)]()
+[![Agent: Claude Code](https://img.shields.io/badge/agent-Claude%20Code-D97706.svg)]()
+[![Agent: Cursor](https://img.shields.io/badge/agent-Cursor-00D1B2.svg)]()
+
 > _"Export your decision-making logic before you leave your next job."_
 
 **offboarding-sme-clone** turns a departing engineer's documents into structured knowledge artifacts that any coding agent can query — in the engineer's own voice.
