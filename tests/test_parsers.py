@@ -106,7 +106,7 @@ def test_passthrough_parser(temp_output_dir):
 
 def test_code_parser(temp_output_dir):
     # Test with a .py file (the script itself)
-    py_path = REPO_ROOT / "scripts" / "setup.py"
+    py_path = REPO_ROOT / "sme_clone" / "setup.py"
     output_path = _parse_code(py_path, temp_output_dir)
     
     assert output_path.exists()
