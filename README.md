@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![Status: Early Development](https://img.shields.io/badge/status-early%20development-orange.svg)]()
+[![Status: v0.1.0 Release](https://img.shields.io/badge/status-v0.1.0%20release-brightgreen.svg)]()
 [![uv](https://img.shields.io/badge/uv-package%20manager-blueviolet.svg)](https://docs.astral.sh/uv/)
 [![Agent: Antigravity](https://img.shields.io/badge/agent-Antigravity-4285F4.svg)]()
 [![Agent: Claude Code](https://img.shields.io/badge/agent-Claude%20Code-D97706.svg)]()
@@ -45,7 +45,7 @@ uv sync
 The departing engineer should have already placed their files (Slack exports, emails, PDFs, presentations, etc.) into a shared folder.
 
 ```bash
-uv run python scripts/setup.py \
+uv run sme-clone \
     --source "G:/My Drive/offboarding/jane-doe" \
     --sme-email jane@company.com
 ```
@@ -111,7 +111,7 @@ The [`test-example/`](test-example/) folder contains synthetic sample data and p
 
 ```bash
 # Run the pipeline against the test data
-uv run python scripts/setup.py --source ./test-example --sme-email jane@example.com
+uv run sme-clone --source ./test-example --sme-email jane@example.com
 ```
 
 Browse the output at [`test-example/.sme-clone/`](test-example/.sme-clone/) — it includes a sample `_INDEX.md`, `tone_profile.md`, and a `SKILL.md` for API design patterns.
@@ -120,7 +120,7 @@ Browse the output at [`test-example/.sme-clone/`](test-example/.sme-clone/) — 
 
 ```
 offboarding-sme-clone/
-├── scripts/
+├── sme_clone/                    # Main package (formerly scripts/)
 │   ├── setup.py                  # Main entry point
 │   ├── parsers/                  # Format-specific parsers
 │   ├── indexer.py                # Generates _INDEX.md
@@ -137,7 +137,7 @@ offboarding-sme-clone/
 
 ## Status
 
-🚧 **Early development.** The pipeline structure is in place but parsers and analyzers are scaffolded with TODOs. See the [roadmap](docs/ROADMAP.md) for what's next.
+🚀 **v0.1.0 Release.** All core format parsers, index generation, tone extraction, and skill generation features are fully implemented. The pipeline works end-to-end to parse Slack, emails, PDFs, Word docs, PowerPoints, and Excel sheets into structured markdown artifacts. See the [roadmap](docs/ROADMAP.md) for full details on completed milestones.
 
 ## Forking
 
