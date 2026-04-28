@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![Status: v0.1.0 Validated](https://img.shields.io/badge/status-v0.1.0%20validated-brightgreen.svg)]()
+[![Status: v0.2.0 Validated](https://img.shields.io/badge/status-v0.2.0%20validated-brightgreen.svg)]()
 [![uv](https://img.shields.io/badge/uv-package%20manager-blueviolet.svg)](https://docs.astral.sh/uv/)
 [![Agent: Antigravity](https://img.shields.io/badge/agent-Antigravity-4285F4.svg)]()
 [![Agent: Claude Code](https://img.shields.io/badge/agent-Claude%20Code-D97706.svg)]()
@@ -184,7 +184,7 @@ offboarding-sme-clone/
 
 ## Status
 
-✅ **v0.1.0 — End-to-End Validated.** All core format parsers (including MHTML), index generation, tone extraction, and skill generation are fully implemented and validated on real-world data. The full pipeline was run on 48 Warren Buffett Chairman's Letters (1977–2024), producing a complete knowledge base that was then queried live — including a case where the clone correctly refused to fabricate a view the SME never expressed. Each supported agent has two agentic skills: answering questions in the SME's voice, and autonomously running the full clone pipeline. See the [roadmap](docs/ROADMAP.md) for full details on completed milestones.
+✅ **v0.2.0 — End-to-End Validated.** All core format parsers (including MHTML), index generation, tone extraction, and skill generation are fully implemented and validated on real-world data. The full pipeline was run on 48 Warren Buffett Chairman's Letters (1977–2024), producing a complete knowledge base that was then queried live — including a case where the clone correctly refused to fabricate a view the SME never expressed. Each supported agent has two agentic skills: answering questions in the SME's voice, and autonomously running the full clone pipeline. See the [roadmap](docs/ROADMAP.md) for full details on completed milestones.
 
 ## Forking
 
