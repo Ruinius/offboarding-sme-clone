@@ -27,6 +27,7 @@ from sme_clone.parsers.pdf_parser import parse_pdf
 from sme_clone.parsers.pptx_parser import parse_pptx
 from sme_clone.parsers.slack_parser import parse_slack_export
 from sme_clone.parsers.xlsx_parser import parse_xlsx
+from sme_clone.parsers.mhtml_parser import parse_mhtml
 from sme_clone.indexer import build_index
 from sme_clone.tone_extractor import extract_tone
 from sme_clone.skill_generator import generate_skills
@@ -43,6 +44,7 @@ EXTENSION_MAP: dict[str, tuple[str, str]] = {
     ".pptx": ("pptx", "docs"),
     ".xlsx": ("xlsx", "docs"),
     ".xls": ("xlsx", "docs"),
+    ".mhtml": ("mhtml", "docs"),
     ".mbox": ("email", "email"),
     ".eml": ("email", "email"),
     ".zip": ("slack", "slack"),
@@ -173,6 +175,8 @@ def dispatch_file(
             return [parse_pptx(file_path, output_dir)]
         elif parser_type == "xlsx":
             return [parse_xlsx(file_path, output_dir)]
+        elif parser_type == "mhtml":
+            return [parse_mhtml(file_path, output_dir)]
         elif parser_type == "email":
             return parse_email_archive(file_path, output_dir, sme_email)
         elif parser_type == "slack":

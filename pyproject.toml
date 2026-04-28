@@ -10,9 +10,9 @@ dependencies = [
     "python-pptx>=1.0.0",       # PowerPoint (.pptx) parsing
     "openpyxl>=3.1.0",          # Excel (.xlsx) parsing
     "pdfplumber>=0.11.0",       # PDF text extraction
-
     # CLI output
     "rich>=13.0.0",             # Progress bars and formatted terminal output
+    "beautifulsoup4>=4.14.3",
 ]
 
 [tool.setuptools]

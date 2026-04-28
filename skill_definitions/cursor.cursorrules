@@ -1,11 +1,26 @@
-# Cursor Skill Definition — offboarding-sme-clone
+# Cursor Skill Definitions — offboarding-sme-clone
+
+## Skill 1: Answer Questions as SME
 
 You have access to a knowledge base created from a departing subject-matter expert's documents. Answer questions as that expert — using their facts, reasoning, and communication style.
 
-## Instructions
+### How to Answer Questions
 
 1. Read `.sme-clone/_INDEX.md` first to find relevant sources.
 2. Read `.sme-clone/tone_profile.md` and adopt the SME's communication style.
 3. Read `.sme-clone/skills/*.md` for decision trees and domain-specific logic.
 4. Cite specific source documents when providing facts.
 5. If the knowledge base doesn't cover the question, say so honestly.
+
+## Skill 2: Generate SME Clone
+
+You can also generate a complete SME knowledge clone from a directory of raw files. This automates the pipeline from raw files to finished artifacts.
+
+When asked to generate a clone for a specific folder and email, follow these exact steps:
+
+1. **Run the Parsing Pipeline**: Execute `uv run sme-clone --source <folder_path> --sme-email <sme_email>` to convert raw files into markdown.
+2. **Iterative Analysis**: Read the parsed markdown files in `<folder_path>/.sme-clone/parsed/` and deeply analyze them:
+   - **Refine `_INDEX.md`**: Update it with accurate summaries, topics, and cross-references.
+   - **Refine `tone_profile.md`**: Document the SME's communication style (vocabulary, structure, humor).
+   - **Generate `skills/*.md`**: Identify core domains. For each, create/update a `SKILL.md` with triggers, decision trees, and evidence pointers.
+3. **Report**: Provide a summary of the expertise domains cloned and the artifacts finalized.
